@@ -1,0 +1,9 @@
+Aplikasi Pendataan RT 06 Rw 15
+
+		Login ( admin )
+Username :admin@gmail.com	
+Password :admin123
+
+		User 
+Username :alex@gmail.com	
+Password :alex1234
