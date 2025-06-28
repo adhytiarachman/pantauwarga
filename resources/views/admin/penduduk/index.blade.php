@@ -42,8 +42,8 @@
                 $anggota = $penduduks->filter(fn($item) => $item->id !== $kepala->id);
             @endphp
             <div class="col-12 mb-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white fw-bold">
+                <div class="card shadow-lg h-100" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card-header bg-primary text-white fw-bold rounded-top">
                         No. KK: {{ $noKK }} <br>
                         Kepala Keluarga: {{ $kepala->nama_kepala_keluarga }} (NIK: {{ $kepala->nik }})
                     </div>
@@ -53,51 +53,77 @@
                                 Tidak ada anggota keluarga selain kepala keluarga.
                             </div>
                         @else
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>NIK</th>
-                                        <th>Nama</th>
-                                        <th>TTL</th>
-                                        <th>Jenis Kelamin</th>
-                                        <th>Usia</th>
-                                        <th>Status Tinggal</th>
-                                        <th class="text-end">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($anggota as $index => $penduduk)
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
                                         <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $penduduk->nik }}</td>
-                                            <td>{{ $penduduk->nama_kepala_keluarga }}</td>
-                                            <td>
-                                                {{ $penduduk->tempat_lahir ?? '-' }} /
-                                                {{ $penduduk->tanggal_lahir ? \Carbon\Carbon::parse($penduduk->tanggal_lahir)->format('d-m-Y') : '-' }}
-                                            </td>
-                                            <td>{{ $penduduk->jenis_kelamin }}</td>
-                                            <td>{{ $penduduk->usia }}</td>
-                                            <td>{{ $penduduk->status_tinggal }}</td>
-                                            <td class="text-end">
-                                                <a href="{{ route('penduduk.edit', $penduduk->id) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                                <form action="{{ route('penduduk.destroy', $penduduk->id) }}"
-                                                      method="POST"
-                                                      class="d-inline"
-                                                      data-confirm="delete">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
+                                            <th>#</th>
+                                            <th>NIK</th>
+                                            <th>Nama</th>
+                                            <th>TTL</th>
+                                            <th>Jenis Kelamin</th>
+                                            <th>Usia</th>
+                                            <th>Agama</th>
+                                            <th>Status Perkawinan</th>
+                                            <th>Status Tinggal</th>
+                                            <th>Pekerjaan</th>
+                                            <th>Pendapatan per Bulan</th>
+                                            <th>Pendapatan per KK</th>
+                                            <th>Rata-Rata Pendapatan per KK</th>
+                                            <th class="text-end">Aksi</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($anggota as $index => $penduduk)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $penduduk->nik }}</td>
+                                                <td>{{ $penduduk->nama_kepala_keluarga }}</td>
+                                                <td>
+                                                    {{ $penduduk->tempat_lahir ?? '-' }} /
+                                                    {{ $penduduk->tanggal_lahir ? \Carbon\Carbon::parse($penduduk->tanggal_lahir)->format('d-m-Y') : '-' }}
+                                                </td>
+                                                <td>{{ $penduduk->jenis_kelamin }}</td>
+                                                <td>{{ $penduduk->usia }}</td>
+                                                <td>{{ $penduduk->agama }}</td>
+                                                <td>{{ $penduduk->status_perkawinan }}</td>
+                                                <td>{{ $penduduk->status_tinggal }}</td>
+                                                <td>{{ $penduduk->pekerjaan }}</td>
+                                                <td>{{ number_format($penduduk->income_per_month ?? 0, 2) }}</td>
+                                                <td>
+                                                    {{-- Pendapatan per KK dihitung berdasarkan semua anggota keluarga di no_kk yang sama --}}
+                                                    @php
+                                                        $pendapatanPerKK = $penduduks->where('no_kk', $penduduk->no_kk)->sum('income_per_month');
+                                                    @endphp
+                                                    <strong>{{ number_format($pendapatanPerKK, 2) }}</strong>
+                                                </td>
+                                                <td>
+                                                    {{-- Rata-rata Pendapatan per KK dihitung dengan avg --}}
+                                                    @php
+                                                        $averagePendapatanPerKK = $penduduks->where('no_kk', $penduduk->no_kk)->avg('income_per_month');
+                                                    @endphp
+                                                    <strong>{{ number_format($averagePendapatanPerKK, 2) }}</strong>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="{{ route('penduduk.edit', $penduduk->id) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <form action="{{ route('penduduk.destroy', $penduduk->id) }}"
+                                                          method="POST"
+                                                          class="d-inline"
+                                                          data-confirm="delete">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         @endif
                     </div>
                 </div>

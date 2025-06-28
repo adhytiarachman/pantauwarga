@@ -13,7 +13,7 @@ class InformasiController extends Controller
      */
     public function index()
     {
-         $informasis = Informasi::latest()->get();
+        $informasis = Informasi::latest()->get();
         return view('admin.informasi.index', compact('informasis'));
     }
 
@@ -30,7 +30,7 @@ class InformasiController extends Controller
      */
     public function store(Request $request)
     {
-         $request->validate([
+        $request->validate([
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
             'tanggal' => 'required|date',
@@ -62,7 +62,7 @@ class InformasiController extends Controller
      */
     public function update(Request $request, Informasi $informasi)
     {
-         $request->validate([
+        $request->validate([
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
             'tanggal' => 'required|date',

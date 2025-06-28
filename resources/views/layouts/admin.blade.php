@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,6 +16,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- CDN AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
 
   <style>
@@ -106,6 +109,9 @@
       background-color: #dc2626;
     }
 
+
+
+
     /* Responsive Styles */
     @media (max-width: 768px) {
       .sidebar {
@@ -136,11 +142,78 @@
         align-items: center;
         justify-content: center;
       }
+
+      .sidebar h4.animate-text {
+        font-size: 1.5rem;
+        background: linear-gradient(to right, #3b82f6, #9333ea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientMove 5s infinite linear;
+      }
+
+      @keyframes gradientMove {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .sidebar .nav-link {
+        position: relative;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .sidebar .nav-link:hover,
+      .sidebar .nav-link.active {
+        background: linear-gradient(to right, #2563eb, #9333ea);
+        color: #fff;
+        font-weight: 600;
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .sidebar .nav-link i {
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+      }
+
+      .sidebar .nav-link:hover i {
+        transform: rotate(5deg) scale(1.2);
+      }
+
+      .sidebar .nav-link .link-text {
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s;
+        display: inline-block;
+      }
+
+      .sidebar .nav-link:hover .link-text,
+      .sidebar .nav-link.active .link-text {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      @media (max-width: 768px) {
+        .sidebar .nav-link .link-text {
+          display: inline-block;
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+
     }
   </style>
 
   @stack('styles')
 </head>
+
 <body>
 
   <!-- Toggle Button (Mobile) -->
@@ -148,27 +221,43 @@
     <i class="bi bi-list fs-4"></i>
   </button>
 
+
   <!-- Sidebar -->
   <nav class="sidebar d-flex flex-column" id="sidebarMenu">
-    <div class="mb-4 fs-4 fw-bold text-white text-center">
-      <i class="bi bi-speedometer2 me-2"></i> Admin Panel
+    <div class="mb-5 text-center">
+      <h4 class="fw-bold text-white animate-text">
+        <i class="bi bi-speedometer2 me-2"></i> Admin Panel
+      </h4>
     </div>
 
-    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-      <i class="bi bi-graph-up-arrow"></i> Dashboard
+    <!-- Link Items -->
+    <a href="{{ route('admin.dashboard') }}"
+      class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+      <i class="bi bi-bar-chart-line-fill"></i> <span class="link-text">Dashboard</span>
     </a>
+
     <a href="{{ route('penduduk.index') }}" class="nav-link {{ request()->routeIs('penduduk.*') ? 'active' : '' }}">
-      <i class="bi bi-people-fill"></i> Data Penduduk
+      <i class="bi bi-people-fill"></i> <span class="link-text">Data Penduduk</span>
     </a>
+
     <a href="{{ route('informasi.index') }}" class="nav-link {{ request()->routeIs('informasi.*') ? 'active' : '' }}">
-      <i class="bi bi-bullhorn"></i> Informasi
+      <i class="bi bi-megaphone-fill"></i> <span class="link-text">Informasi</span>
     </a>
 
-    <a href="{{ route('admin.approvals') }}" class="nav-link {{ request()->routeIs('admin.approvals') ? 'active' : '' }}">
-  <i class="bi bi-person-check"></i> Persetujuan Akun
-</a>
+    <a href="{{ route('admin.approvals') }}"
+      class="nav-link {{ request()->routeIs('admin.approvals') ? 'active' : '' }}">
+      <i class="bi bi-person-check-fill"></i> <span class="link-text">Persetujuan Akun</span>
+    </a>
 
+    <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment.*') ? 'active' : '' }}">
+      <i class="bi bi-wallet2"></i> <span class="link-text">Pembayaran</span>
+    </a>
 
+    <a href="{{ route('bansos.index') }}" class="nav-link {{ request()->routeIs('bansos.*') ? 'active' : '' }}">
+      <i class="bi bi-bag-heart-fill"></i> <span class="link-text">Manajemen Bansos</span>
+    </a>
+
+    <!-- Logout -->
     <form method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit" class="btn btn-logout w-100 mt-4">
@@ -176,6 +265,7 @@
       </button>
     </form>
   </nav>
+
 
   <!-- Main Content -->
   <main class="content">
@@ -198,29 +288,33 @@
     });
   </script>
 
+
   @stack('scripts')
 
   {{-- Flash Message Alert --}}
-    @if(session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        </script>
-    @elseif(session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: '{{ session('error') }}',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        </script>
-    @endif
+  @if(session('success'))
+    <script>
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: '{{ session('success') }}',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    </script>
+  @elseif(session('error'))
+    <script>
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: '{{ session('error') }}',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    </script>
+
+
+  @endif
 </body>
+
 </html>

@@ -3,173 +3,230 @@
 @section('title', 'Dashboard Pengguna')
 
 @section('content')
-<div class="container-fluid py-4">
-
-    
+  <div class="container py-5">
 
     {{-- Header --}}
-    <h1 class="fw-bold display-5 text-gradient mb-5" data-aos="fade-down">
-        👋 Selamat Datang, {{ $penduduk->nama ?? 'Pengguna' }}
+    <h1 class="fw-bold text-gradient text-center mb-5" data-aos="fade-down">
+    👋 Selamat Datang, {{ $penduduk->nama_kepala_keluarga ?? 'Pengguna' }}
     </h1>
 
-    {{-- Stat Cards --}}
-    <div class="row g-4 mb-5">
-        <div class="col-md-6 col-lg-4" data-aos="fade-up">
-            <div class="glass-card p-4">
-                <h6 class="text-uppercase text-muted">👥 Total Anggota Keluarga</h6>
-                <h2 class="fw-bold text-primary" id="anggotaKeluarga">
-                    {{ \App\Models\Penduduk::where('no_kk', $penduduk->no_kk)->count() }}
-                </h2>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="glass-card p-4">
-                <h6 class="text-uppercase text-muted">📢 Jumlah Informasi</h6>
-                <h2 class="fw-bold text-success" id="jumlahInformasi">
-                    {{ $informasi->count() }}
-                </h2>
-            </div>
-        </div>
+    {{-- Grafik --}}
+    <div class="row g-4 justify-content-center" data-aos="fade-up">
+    {{-- Jumlah Data --}}
+    <div class="col-md-6 col-lg-4">
+      <div class="glass-card p-4 text-center chart-container">
+      <h5 class="mb-3">📊 Jumlah Data</h5>
+      <canvas id="jumlahDataChart" height="200"></canvas>
+      </div>
     </div>
 
-    {{-- Chart Visual --}}
-    <div class="mb-5" data-aos="fade-up">
-        <canvas id="dashboardChart" height="100"></canvas>
+    {{-- Usia --}}
+    <div class="col-md-6 col-lg-4">
+      <div class="glass-card p-4 text-center chart-container">
+      <h5 class="mb-3">📈 Distribusi Usia</h5>
+      <canvas id="usiaChartMini" height="200"></canvas>
+      </div>
     </div>
 
-    {{-- Data Diri --}}
-    <div id="data-diri" class="mb-5" data-aos="fade-right">
-        <h3 class="fw-semibold mb-4">🧾 Data Diri Anda</h3>
+    {{-- Gender --}}
+    <div class="col-md-6 col-lg-4">
+      <div class="glass-card p-4 text-center chart-container">
+      <h5 class="mb-3">👫 Jenis Kelamin</h5>
+      <canvas id="genderChartMini" height="200"></canvas>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="container py-5">
+    <h2 class="fw-bold text-black text-center mb-5" data-aos="fade-up">
+    Grafik Penduduk Rt 06 Rw 15
+    </h2>
 
-        @if ($penduduk)
-            @php
-                $kepala = \App\Models\Penduduk::where('no_kk', $penduduk->no_kk)->where('is_kepala_keluarga', true)->first();
-            @endphp
-
-            <div class="glass-card p-4 row g-3">
-                <div class="col-md-6"><strong>👨‍👩‍👧‍👦 Kepala Keluarga:</strong> {{ $kepalaKeluarga->nama ?? '-' }}</div>
-                <div class="col-md-6"><strong>🧑 Nama Anda:</strong> {{ $penduduk->nama_kepala_keluarga ?? '-' }}</div>
-                <div class="col-md-6"><strong>🆔 NIK:</strong> {{ $penduduk->nik }}</div>
-                <div class="col-md-6"><strong>📄 No. KK:</strong> {{ $penduduk->no_kk }}</div>
-                <div class="col-md-6"><strong>🎂 TTL:</strong> {{ $penduduk->tempat_lahir ?? '-' }} / {{ $penduduk->tanggal_lahir ?? '-' }}</div>
-                <div class="col-md-6"><strong>📍 Alamat:</strong> {{ $penduduk->alamat ?? '-' }}</div>
-                <div class="col-md-6"><strong>👥 Status:</strong> {{ $penduduk->is_kepala_keluarga ? 'Kepala Keluarga' : 'Anggota' }}</div>
-            </div>
-        @else
-            <div class="alert alert-warning text-center">Data penduduk belum tersedia.</div>
-        @endif
+    <div class="row g-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 glass-card shadow-sm p-3 text-center h-100" data-aos="fade-up">
+      <i class="bi bi-people fs-1 text-primary"></i>
+      <h6 class="mt-2">Total Penduduk</h6>
+      <h3 class="fw-bold text-dark">{{ $totalPenduduk }}</h3>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 glass-card shadow-sm p-3 text-center h-100" data-aos="fade-up" data-aos-delay="100">
+      <i class="bi bi-house-door fs-1 text-success"></i>
+      <h6 class="mt-2">Kepala Keluarga</h6>
+      <h3 class="fw-bold text-dark">{{ $totalKK }}</h3>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 glass-card shadow-sm p-3 text-center h-100" data-aos="fade-up" data-aos-delay="200">
+      <i class="bi bi-check-circle fs-1 text-info"></i>
+      <h6 class="mt-2">Keluarga Menetap</h6>
+      <h3 class="fw-bold text-dark">{{ $menetap }}</h3>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card border-0 glass-card shadow-sm p-3 text-center h-100" data-aos="fade-up" data-aos-delay="300">
+      <i class="bi bi-clock-history fs-1 text-warning"></i>
+      <h6 class="mt-2">Tinggal Sementara</h6>
+      <h3 class="fw-bold text-dark">{{ $sementara }}</h3>
+      </div>
+    </div>
     </div>
 
-    {{-- Informasi Terbaru --}}
-    <div id="informasi" data-aos="fade-left">
-        <h3 class="fw-semibold mb-4">📢 Informasi Terbaru</h3>
+    {{-- Grafik Penduduk RT 06 Rw 15 --}}
+    @include('user.partials.dashboard-statistics')
 
-        @if ($informasi->isEmpty())
-            <div class="alert alert-info text-center">Belum ada informasi terbaru saat ini.</div>
-        @else
-            <div class="row g-4">
-                @foreach ($informasi as $info)
-                    <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="{{ $loop->index * 100 }}">
-                        <div class="glass-card h-100 p-0 overflow-hidden">
-                            <div class="p-3 bg-gradient-info text-white rounded-top-4">
-                                <h5 class="mb-1">{{ $info->judul }}</h5>
-                                <small>{{ \Carbon\Carbon::parse($info->tanggal)->translatedFormat('d F Y') }}</small>
-                            </div>
-                            <div class="p-3">
-                                <p class="text-muted mb-0">
-                                    {{ \Illuminate\Support\Str::limit($info->konten, 120, '...') }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-</div>
+    {{-- Scripts Grafik Penduduk RT 06 Rw 15 --}}
+    @include('user.partials.dashboard-scripts')
 
-{{-- Style --}}
-<style>
+
+  @endsection
+
+  @push('styles')
+    <style>
     body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #f0f2f5, #ffffff);
-        transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-        background: #1a1a2e;
-        color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #eef2f7, #ffffff);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .text-gradient {
-        background: linear-gradient(90deg, #0061ff, #60efff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-
-    .dark-mode .glass-card {
-        background: rgba(40, 40, 60, 0.8);
-        color: #eee;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 1.25rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
     }
 
     .glass-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      transform: translateY(-8px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
     }
 
-    .bg-gradient-info {
-        background: linear-gradient(135deg, #1d2b64 0%, #f8cdda 100%);
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      max-height: 320px;
     }
-</style>
 
-{{-- Script --}}
-@push('scripts')
-    {{-- AOS --}}
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .chart-container {
+      height: 250px;
+      }
+    }
+    </style>
+  @endpush
+
+  @push('scripts')
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>AOS.init();</script>
 
-    {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const totalAnggota = parseInt(document.getElementById('anggotaKeluarga').textContent);
-        const totalInfo = parseInt(document.getElementById('jumlahInformasi').textContent);
+    const usiaData = @json($usiaCounts);
+    const genderData = @json($genderCounts);
 
-        const ctx = document.getElementById('dashboardChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Anggota Keluarga', 'Informasi RT'],
-                datasets: [{
-                    label: 'Jumlah Data',
-                    data: [totalAnggota, totalInfo],
-                    backgroundColor: ['#0061ff', '#28a745'],
-                    borderRadius: 10,
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    </script>
 
-    {{-- Dark Mode --}}
-    <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
+
+    // Jumlah Data Chart
+    new Chart(document.getElementById('jumlahDataChart'), {
+      type: 'bar',
+      data: {
+      labels: ['Anggota Keluarga', 'Informasi RT'],
+      datasets: [{
+        label: 'Jumlah',
+        data: [
+      {{ \App\Models\Penduduk::where('no_kk', $penduduk->no_kk)->count() }},
+        {{ \App\Models\Informasi::count() }}
+        ],
+        backgroundColor: ['#3b82f6', '#10b981'],
+        borderRadius: 12,
+        barThickness: 30
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+        display: true,
+        position: 'top'
         }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+      }
+    });
+
+    // Usia Chart
+    new Chart(document.getElementById('usiaChartMini'), {
+      type: 'bar',
+      data: {
+      labels: Object.keys(usiaData),
+      datasets: [{
+        label: 'Jumlah Penduduk',
+        data: Object.values(usiaData),
+        backgroundColor: '#6366f1',
+        borderRadius: 10,
+        barThickness: 25
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+        display: true,
+        position: 'top'
+        }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+      }
+    });
+
+    // Gender Doughnut Chart
+    new Chart(document.getElementById('genderChartMini'), {
+      type: 'doughnut',
+      data: {
+      labels: Object.keys(genderData),
+      datasets: [{
+        label: 'Jumlah',
+        data: Object.values(genderData),
+        backgroundColor: ['#f59e0b', '#3b82f6'],
+        borderWidth: 2,
+        hoverOffset: 8
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+        bottom: 30
+        }
+      },
+      plugins: {
+        legend: {
+        position: 'bottom',
+        labels: {
+          font: { size: 14 },
+          boxWidth: 20,
+          padding: 12
+        }
+        }
+      }
+      }
+    });
     </script>
-@endpush
-@endsection
+  @endpush

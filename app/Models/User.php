@@ -52,9 +52,14 @@ class User extends Authenticatable
     }
 
     public function penduduk()
-{
-    return $this->hasOne(Penduduk::class);
-}
+    {
+        return $this->hasOne(Penduduk::class);
+    }
+
+    public function topics()
+    {
+        return $this->hasMany(ChatTopic::class);
+    }
 
 }
 

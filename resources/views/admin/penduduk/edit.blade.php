@@ -43,6 +43,28 @@
         <input type="number" name="usia" id="usia" class="form-control" min="0" required value="{{ old('usia', $penduduk->usia) }}">
     </div>
 
+    <div class="form-group">
+    <label for="status_perkawinan">Status Perkawinan</label>
+    <select name="status_perkawinan" id="status_perkawinan" class="form-control">
+        <option value="Belum Menikah">Belum Menikah</option>
+        <option value="Menikah">Menikah</option>
+        <option value="Janda/Duda">Janda/Duda</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="agama">Agama</label>
+    <select name="agama" id="agama" class="form-control">
+        <option value="Islam">Islam</option>
+        <option value="Kristen">Kristen</option>
+        <option value="Hindu">Hindu</option>
+        <option value="Buddha">Buddha</option>
+        <option value="Katolik">Katolik</option>
+        <option value="Konghucu">Konghucu</option>
+    </select>
+</div>
+
+
     <div class="mb-3">
         <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
         <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" value="{{ old('tempat_lahir', $penduduk->tempat_lahir) }}">
@@ -57,6 +79,17 @@
         <label for="alamat" class="form-label">Alamat Rumah</label>
         <input type="text" name="alamat" id="alamat" class="form-control" required value="{{ old('alamat', $penduduk->alamat) }}">
     </div>
+
+    <div class="mb-3">
+        <label for="pekerjaan" class="form-label">Pekerjaan</label>
+        <input type="text" class="form-control" id="pekerjaan" name="pekerjaan" value="{{ old('pekerjaan', $penduduk->pekerjaan) }}">
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="income_per_month">Pendapatan per Bulan</label>
+        <input type="number" name="income_per_month" id="income_per_month" class="form-control" value="{{ old('income_per_month') }}" required>
+    </div>
+
 
     <div class="mb-3">
         <label for="status_tinggal" class="form-label">Status Tinggal</label>

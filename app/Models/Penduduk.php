@@ -17,13 +17,19 @@ class Penduduk extends Model
         'is_kepala_keluarga',
         'user_id', 
         'tempat_lahir', 
-        'tanggal_lahir'
+        'tanggal_lahir',
+        'pekerjaan',
+        'status_perkawinan',
+        'agama',
+        'income_per_month', 
     ];
 
     public function user()
 {
     return $this->belongsTo(User::class);
 }
+
+
 
 }
 
